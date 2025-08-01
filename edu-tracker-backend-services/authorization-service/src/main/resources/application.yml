@@ -1,0 +1,15 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: authorization-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:public-key.pem
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.piyush.authz: DEBUG

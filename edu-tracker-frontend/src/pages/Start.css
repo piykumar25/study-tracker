@@ -1,0 +1,27 @@
+.start-page {
+  text-align: center;
+  margin-top: 15vh;
+  padding: 2rem;
+  color: #333;
+}
+
+.nav-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn {
+  background-color: #007bff;
+  padding: 12px 20px;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
