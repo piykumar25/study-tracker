@@ -1,19 +1,11 @@
 server:
   port: 8080
 
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/authdb
-    username: postgres
-    password: root
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
 jwt:
   issuer: auth-service
   expiration: 864000000
   private-key: classpath:private-key.pem
   public-key: classpath:public-key.pem
+
+internal:
+  secret: my-ultra-secure-internal-key

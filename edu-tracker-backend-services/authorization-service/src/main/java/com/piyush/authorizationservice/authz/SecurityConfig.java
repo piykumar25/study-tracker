@@ -23,7 +23,6 @@ public class SecurityConfig {
                         .jwt(Customizer.withDefaults())
                 );
 
-
         return  http.build();
     }
 }

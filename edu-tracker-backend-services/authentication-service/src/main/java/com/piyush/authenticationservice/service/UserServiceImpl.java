@@ -3,50 +3,62 @@ package com.piyush.authenticationservice.service;
 import com.piyush.authenticationservice.dto.AuthResponse;
 import com.piyush.authenticationservice.dto.LoginRequest;
 import com.piyush.authenticationservice.dto.RegisterRequest;
-import com.piyush.authenticationservice.model.User;
-import com.piyush.authenticationservice.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.piyush.authenticationservice.dto.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    
+    @Value("${internal.secret}")
+    private String internalSecret;
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RestTemplate restTemplate;
 
     @Override
-    @Transactional
     public String registerUser(RegisterRequest registerRequest) {
 
-        Optional<User> user = userRepository.findByEmail(registerRequest.getEmail());
+        HttpHeaders headers = getHttpHeaders();
 
-        if (user.isPresent()) {
-            throw new RuntimeException("User already exists");
+        HttpEntity<RegisterRequest> request = new HttpEntity<>(registerRequest, headers);
+        User savedUser = null;
+        try {
+            savedUser = restTemplate.postForObject("http://localhost:8082/api/v1/internal/user", request, User.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        User newUser = User.builder()
-                .username(registerRequest.getUsername())
-                .email(registerRequest.getEmail())
-                .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role(registerRequest.getRole())
-                .build();
-        User savedUser = userRepository.save(newUser);
+
         return jwtService.generateToken(savedUser);
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Internal-Secret", internalSecret);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
     @Override
     public AuthResponse loginUser(LoginRequest loginRequest) {
+        HttpHeaders headers = getHttpHeaders();
 
-        User user = userRepository.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        User user = null;
+        try {
+            user = restTemplate
+                    .exchange("http://localhost:8082/api/v1/internal/user", HttpMethod.GET,
+                            new HttpEntity<>(loginRequest, headers), User.class).getBody();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         String token = jwtService.generateToken(user);

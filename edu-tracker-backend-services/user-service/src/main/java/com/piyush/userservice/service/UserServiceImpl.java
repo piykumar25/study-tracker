@@ -1,5 +1,6 @@
 package com.piyush.userservice.service;
 
+import com.piyush.userservice.dto.AuthenticationRequest;
 import com.piyush.userservice.dto.UserRequest;
 import com.piyush.userservice.dto.UserResponse;
 import com.piyush.userservice.model.User;
@@ -39,6 +40,39 @@ public class UserServiceImpl implements UserService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole())
+                .status(savedUser.getStatus())
                 .build();
+    }
+
+    @Override
+    public UserResponse getUserAfterAuthentication(AuthenticationRequest authenticationRequest) {
+        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElse(null);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .build();
+
+    }
+
+    @Override
+    public UserResponse getUser(Long id) {
+
+        return userRepository.findById(id).map(user -> UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .build()).orElseThrow(() -> new RuntimeException("User not found"));
+
     }
 }

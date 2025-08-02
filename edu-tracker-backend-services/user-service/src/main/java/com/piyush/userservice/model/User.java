@@ -1,6 +1,7 @@
 package com.piyush.userservice.model;
 
 import com.piyush.userservice.enums.ROLE;
+import com.piyush.userservice.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +32,9 @@ public class User {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     public ROLE role;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    public UserStatus status = UserStatus.ACTIVE;
 }
 
