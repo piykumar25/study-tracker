@@ -2,27 +2,32 @@ import { useState } from 'react';
 import Input from '../components/Input.jsx';
 import Button from '../components/Button';
 import './Form.css';
+import { loginUser } from '../services/AuthService.js';
 
 export default function Login() {
-  const [form, setForm] = useState({
-    email: '', password: ''
-  });
+  const [form, setForm] = useState({ username: '', password: '' });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  setForm({ ...form, [e.name]: e.value });
+};
 
   const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Logging in:", form);
-    // Call API here
+    e.preventDefault(); 
+
+    loginUser(form)
+      .then((response) => {
+        alert('Login successful:', response.data);
+      })
+      .catch((error) => {
+        alert('Login failed:', error);
+      });
   };
 
   return (
     <form className="form" onSubmit={handleLogin}>
       <h2>Login</h2>
-      <Input label="Email" name="email" value={form.email} onChange={handleChange} type="email" />
-      <Input label="Password" name="password" value={form.password} onChange={handleChange} type="password" />
+      <Input label="Username" type="text" name="username" value={form.username} onChange={handleChange} />
+      <Input label="Password" type="password" name="password" value={form.password} onChange={handleChange} />
       <Button label="Login" />
     </form>
   );
