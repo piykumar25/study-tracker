@@ -12,6 +12,19 @@ import java.util.Collections;
 
 public class JWKSetHelper {
 
+    public static JWKSet buildFromPublicKey(RSAPublicKey publicKey) {
+        try {
+            RSAKey rsaKey = new RSAKey.Builder(publicKey)
+                    .keyID("auth-service-key") // You can use any unique ID here
+                    .build();
+
+            return new JWKSet(Collections.singletonList(rsaKey));
+
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to build JWKSet from RSA public key", e);
+        }
+    }
+
     public static JWKSet buildFromPrivateKey(RSAPrivateKey privateKey) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");

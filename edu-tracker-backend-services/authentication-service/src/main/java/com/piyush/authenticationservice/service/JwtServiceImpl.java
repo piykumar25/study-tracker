@@ -31,15 +31,14 @@ public class JwtServiceImpl implements  JwtService {
     @Value("${jwt.issuer}")
     private String issuer;
 
-    @Value("${jwt.private-key}")
-    private Resource privateKeyResource;
+    private final RSAPrivateKey privateKey;
+
 
     private JwtEncoder jwtEncoder;
 
     @PostConstruct
     public void init() {
         try {
-            RSAPrivateKey privateKey = loadPrivateKey();
             JWKSource<com.nimbusds.jose.proc.SecurityContext> jwkSource =
                     (jwkSelector, context) -> jwkSelector.select(
                             JWKSetHelper.buildFromPrivateKey(privateKey)
@@ -67,24 +66,24 @@ public class JwtServiceImpl implements  JwtService {
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    private RSAPrivateKey loadPrivateKey() {
-        try (InputStream inputStream = privateKeyResource.getInputStream()) {
-            byte[] keyBytes = inputStream.readAllBytes();
-            String privateKeyPEM = new String(keyBytes)
-                    .replace("-----BEGIN PRIVATE KEY-----", "")
-                    .replace("-----END PRIVATE KEY-----", "")
-                    .replace("-----BEGIN RSA PRIVATE KEY-----", "")
-                    .replace("-----END RSA PRIVATE KEY-----", "")
-                    .replaceAll("\\s+", "");
-
-            byte[] decoded = Base64.getDecoder().decode(privateKeyPEM);
-            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PrivateKey privateKey = keyFactory.generatePrivate(spec);
-            return (RSAPrivateKey) privateKey;
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to load RSA private key", e);
-        }
-    }
+//    private RSAPrivateKey loadPrivateKey() {
+//        try (InputStream inputStream = privateKeyResource.getInputStream()) {
+//            byte[] keyBytes = inputStream.readAllBytes();
+//            String privateKeyPEM = new String(keyBytes)
+//                    .replace("-----BEGIN PRIVATE KEY-----", "")
+//                    .replace("-----END PRIVATE KEY-----", "")
+//                    .replace("-----BEGIN RSA PRIVATE KEY-----", "")
+//                    .replace("-----END RSA PRIVATE KEY-----", "")
+//                    .replaceAll("\\s+", "");
+//
+//            byte[] decoded = Base64.getDecoder().decode(privateKeyPEM);
+//            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+//            PrivateKey privateKey = keyFactory.generatePrivate(spec);
+//            return (RSAPrivateKey) privateKey;
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Failed to load RSA private key", e);
+//        }
+//    }
 
 }

@@ -1,6 +1,6 @@
 package com.piyush.userservice.service;
 
-import com.piyush.userservice.dto.AuthenticationRequest;
+import com.piyush.userservice.dto.LoginRequest;
 import com.piyush.userservice.dto.UserRequest;
 import com.piyush.userservice.dto.UserResponse;
 import com.piyush.userservice.model.User;
@@ -45,12 +45,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserAfterAuthentication(AuthenticationRequest authenticationRequest) {
-        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElse(null);
+    public UserResponse getUserAfterAuthentication(LoginRequest loginRequest) {
+        User user = userRepository.findByUsername(loginRequest.getUsername()).orElse(null);
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
         return UserResponse.builder()

@@ -27,11 +27,14 @@ public class InternalSecretFilter extends OncePerRequestFilter {
 
         String requestPath = request.getRequestURI();
 
-        if (requestPath.startsWith("/api/v1/internal") && request.getHeader(SECRET_HEADER).equals(internalSecret)) {
-            filterChain.doFilter(request, response);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: Invalid or missing internal secret");
+        if (requestPath.startsWith("/api/v1/internal")) {
+            if (!request.getHeader(SECRET_HEADER).equals(internalSecret)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Unauthorized: Invalid internal secret");
+                return;
+            }
         }
+        filterChain.doFilter(request, response);
+
     }
 }

@@ -1,6 +1,6 @@
 package com.piyush.userservice.controller;
 
-import com.piyush.userservice.dto.AuthenticationRequest;
+import com.piyush.userservice.dto.LoginRequest;
 import com.piyush.userservice.dto.UserRequest;
 import com.piyush.userservice.dto.UserResponse;
 import com.piyush.userservice.service.UserService;
@@ -22,8 +22,8 @@ public class InternalUserController {
 
     }
 
-    @GetMapping
-    public ResponseEntity<UserResponse> getUserAfterAuthentication(@RequestBody AuthenticationRequest authenticationRequest) {
-        return ResponseEntity.ok().body(userService.getUserAfterAuthentication(authenticationRequest));
+    @PostMapping("/details")
+    public ResponseEntity<UserResponse> getUserAfterAuthentication(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok().body(userService.getUserAfterAuthentication(loginRequest));
     }
 }

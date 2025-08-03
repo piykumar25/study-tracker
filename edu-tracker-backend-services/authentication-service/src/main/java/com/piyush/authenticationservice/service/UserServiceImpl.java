@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         User user = null;
         try {
             user = restTemplate
-                    .exchange("http://localhost:8082/api/v1/internal/user", HttpMethod.GET,
+                    .exchange("http://localhost:8082/api/v1/internal/user/details", HttpMethod.POST,
                             new HttpEntity<>(loginRequest, headers), User.class).getBody();
         } catch (Exception e) {
             throw new RuntimeException(e);

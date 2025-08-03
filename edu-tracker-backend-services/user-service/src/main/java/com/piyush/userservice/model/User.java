@@ -33,8 +33,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     public ROLE role;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     public UserStatus status = UserStatus.ACTIVE;
 }
 
