@@ -8,7 +8,5 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface UserService {
     UserResponse createUser(UserRequest userRequest);
 
-    UserResponse getUserAfterAuthentication(LoginRequest loginRequest);
-
     UserResponse getUser(Long id);
 }

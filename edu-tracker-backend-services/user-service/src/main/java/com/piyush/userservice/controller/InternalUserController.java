@@ -21,9 +21,4 @@ public class InternalUserController {
         return ResponseEntity.ok().body(userService.createUser(userRequest));
 
     }
-
-    @PostMapping("/details")
-    public ResponseEntity<UserResponse> getUserAfterAuthentication(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok().body(userService.getUserAfterAuthentication(loginRequest));
-    }
 }

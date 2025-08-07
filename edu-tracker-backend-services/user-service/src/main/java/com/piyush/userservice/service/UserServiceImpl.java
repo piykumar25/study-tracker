@@ -16,7 +16,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
@@ -29,7 +28,6 @@ public class UserServiceImpl implements UserService {
         User newUser = User.builder()
                 .username(userRequest.getUsername())
                 .email(userRequest.getEmail())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
                 .role(userRequest.getRole())
                 .build();
 
@@ -42,25 +40,6 @@ public class UserServiceImpl implements UserService {
                 .role(savedUser.getRole())
                 .status(savedUser.getStatus())
                 .build();
-    }
-
-    @Override
-    public UserResponse getUserAfterAuthentication(LoginRequest loginRequest) {
-        User user = userRepository.findByUsername(loginRequest.getUsername()).orElse(null);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .status(user.getStatus())
-                .build();
-
     }
 
     @Override

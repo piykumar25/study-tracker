@@ -2,6 +2,7 @@ package com.piyush.authenticationservice.service;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.piyush.authenticationservice.dto.User;
+import com.piyush.authenticationservice.events.UserRegisteredEvent;
 import com.piyush.authenticationservice.utility.JWKSetHelper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class JwtServiceImpl implements  JwtService {
     }
 
     @Override
-    public String generateToken(User user) {
+    public String generateToken(UserRegisteredEvent user) {
         Instant now = Instant.now();
         Instant expiry = now.plusMillis(jwtExpirationMillis);
 

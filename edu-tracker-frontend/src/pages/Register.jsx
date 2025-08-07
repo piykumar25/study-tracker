@@ -1,32 +1,44 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import './Form.css';
 
 import { registerUser } from '../services/AuthService.js';
+import { toast } from 'react-toastify';
 
 export default function Register() {
   const [form, setForm] = useState({
-    username: '', email: '', password: '', role: 'USER'
+    username: '',
+    email: '',
+    password: '',
+    role: 'USER'
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.name]: e.value });
+    const { name, value } = e.target; // 🔥 FIXED
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     console.log("Registering:", form);
-    // Call API here
-    registerUser(form)
-      .then((response) => {
-        console.log('Registration successful:', response.data);
-      })
-      .catch((error) => {
-        console.error('Registration failed:', error);
-      });
-  };
 
+    try {
+      const response = await registerUser(form);
+      console.log('Registration successful:', response.data);
+
+      // ✅ Show user-friendly message (can be replaced with toast)
+      toast.success('Registration successful! You can now log in.');
+
+      // ✅ Redirect to login page
+      navigate('/login', { replace: true });
+    } catch (error) {
+      toast.error('Registration failed. Please try again.');
+    }
+  };
 
   return (
     <form className="form" onSubmit={handleRegister}>

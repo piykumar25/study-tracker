@@ -3,23 +3,27 @@ import Input from '../components/Input.jsx';
 import Button from '../components/Button';
 import './Form.css';
 import { loginUser } from '../services/AuthService.js';
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
 
   const handleChange = (e) => {
-  setForm({ ...form, [e.name]: e.value });
-};
+    const { name, value } = e.target; // 🔥 FIXED
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleLogin = (e) => {
     e.preventDefault(); 
 
     loginUser(form)
       .then((response) => {
-        alert('Login successful:', response.data);
+        toast.success('Login successful!');
+        console.log('Login successful:', response.data);
       })
       .catch((error) => {
-        alert('Login failed:', error);
+        toast.error('Login failed. Please check your credentials and try again.');
+        console.error('Login failed:', error);
       });
   };
 

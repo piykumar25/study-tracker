@@ -7,7 +7,7 @@ function Input({ label, type = "text", value, onChange, placeholder, name }) {
       <input 
         type={type}
         value={value}
-        onChange={(e) => onChange({ name: e.target.name, value: e.target.value })}
+        onChange={onChange} // ✅ Pass event directly
         placeholder={placeholder}
         name={name}
       />
