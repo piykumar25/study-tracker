@@ -38,7 +38,10 @@ public class UserServiceImpl implements UserService {
                 });
         UserAuth userAuth = UserAuth.builder()
                 .username(registerRequest.getUsername())
-                .password(passwordEncoder.encode(registerRequest.getPassword())).build();
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .email(registerRequest.getEmail())
+                .role(registerRequest.getRole())
+                .build();
 
         UserAuth savedUser = userAuthRepository.save(userAuth);
         UserRegisteredEvent userRegisteredEvent = UserRegisteredEvent.builder()
@@ -62,11 +65,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse loginUser(LoginRequest loginRequest) {
+        UserAuth user = userAuthRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
 
+        UserRegisteredEvent userRegisteredEvent = UserRegisteredEvent.builder()
+                .username(user.getUsername())
+                .id(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
 
-//        String token = jwtService.generateToken(user);
-        String token = null;
+        String token = jwtService.generateToken(userRegisteredEvent);
 
         return new AuthResponse(token);
     }

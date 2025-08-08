@@ -59,8 +59,8 @@ public class JwtServiceImpl implements  JwtService {
                 .issuer(issuer)
                 .issuedAt(now)
                 .expiresAt(expiry)
-                .subject(user.getEmail())
-                .claim("role", user.getRole())
+//                .subject(user.getEmail())
+//                .claim("role", user.getRole())
                 .claim("userId", user.getId())
                 .build();
 

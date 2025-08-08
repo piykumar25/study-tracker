@@ -1,9 +1,7 @@
 package com.piyush.authenticationservice.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.piyush.authenticationservice.enums.ROLE;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +19,8 @@ public class UserAuth {
     private Long id;
     private String username;
     private String password;
+    private String email;
+
+    @Enumerated(EnumType.STRING)
+    private ROLE role;
 }
