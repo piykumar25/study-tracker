@@ -1,0 +1,40 @@
+:root {
+  --bg: #ffffff;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --text: #111827;
+  --primary: #111827;
+  --danger-bg: #fee2e2;
+  --danger-border: #fecaca;
+  --danger-text: #991b1b;
+}
+
+.page { max-width: 1040px; margin: 24px auto; padding: 0 16px; }
+.header { margin-bottom: 16px; }
+.title { margin: 0; font-size: 28px; line-height: 1.2; }
+.subtitle { margin: 6px 0 0; color: var(--muted); }
+
+.card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.sectionTitle { margin: 0 0 12px; font-size: 18px; }
+
+.input, .select, .textarea { border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font: inherit; width: 100%; }
+.textarea { resize: vertical; }
+
+.btn { background: #fff; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+.btn:disabled { opacity: .7; cursor: not-allowed; }
+.btnPrimary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btnSmall { padding: 6px 10px; font-size: 13px; }
+.btnDanger { background: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-border); }
+
+.toolbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.filters { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 8px 0 16px; }
+
+.table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.th { text-align: left; border-bottom: 1px solid var(--border); padding: 10px 8px; font-weight: 600; font-size: 14px; color: #374151; }
+.td { border-bottom: 1px solid #f3f4f6; padding: 10px 8px; vertical-align: top; }
+.actions { white-space: nowrap; }
+
+.error { color: #b91c1c; font-size: 12px; }
+.skeleton { height: 12px; background: #f3f4f6; border-radius: 6px; margin: 8px 0; }
+.empty { padding: 16px 8px; color: var(--muted); }
+.pagination { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 12px; }

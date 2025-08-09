@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Start from './pages/Start';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import StudyLog from './pages/StudyLog';
+import StudyLog from './features/studyLogs/pages/StudyLogPage';
 import { ToastContainer } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css'; // ensure this is imported once in your app
 
