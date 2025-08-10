@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { useListQuery } from '../../../services/studyLogsApi';
 import { startRealtime } from '../../../services/realtime';
 import { setFilter, setEditing } from '../studyLogsSlice';
@@ -14,8 +15,13 @@ export default function StudyLogPage() {
   const dispatch = useDispatch();
   const { q, subject, from, to, minMins, sort, page, size } = useSelector(s => s.studyLogs);
 
-  const params = { q, subject, from, to, minMins, sort, page, size };
-  const { data, isFetching } = useListQuery(params);
+  const [params, setParams] = useSearchParams();
+  const view = (params.get('view') || 'browse').toLowerCase(); // 'add' | 'browse'
+  const isAdd = view === 'add';
+  const isBrowse = view === 'browse';
+
+  const paramsObj = { q, subject, from, to, minMins, sort, page, size };
+  const { data, isFetching } = useListQuery(paramsObj);
 
   useEffect(() => {
     const stop = startRealtime(dispatch);
@@ -25,6 +31,22 @@ export default function StudyLogPage() {
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
 
+  const setView = (v) => {
+    const next = new URLSearchParams(params);
+    next.set('view', v);
+    setParams(next, { replace: true });
+  };
+
+  // keyboard arrows to switch tabs
+  const addBtnRef = useRef(null);
+  const browseBtnRef = useRef(null);
+  const onTabsKeyDown = (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    if (isAdd) { setView('browse'); browseBtnRef.current?.focus(); }
+    else { setView('add'); addBtnRef.current?.focus(); }
+  };
+
   return (
     <div className="page">
       <header className="header">
@@ -32,12 +54,67 @@ export default function StudyLogPage() {
         <p className="subtitle">Log sessions, filter progress, and export insights.</p>
       </header>
 
-      <section className="card">
+      {/* View toggle */}
+      <div className="viewbar">
+        <div
+          className="segmented"
+          role="tablist"
+          aria-label="Views"
+          onKeyDown={onTabsKeyDown}
+        >
+          <button
+            ref={addBtnRef}
+            id="tab-add"
+            className="segmented__btn"
+            role="tab"
+            aria-selected={isAdd}
+            aria-controls="panel-add"
+            onClick={() => setView('add')}
+            type="button"
+          >
+            Add session
+          </button>
+          <button
+            ref={browseBtnRef}
+            id="tab-browse"
+            className="segmented__btn"
+            role="tab"
+            aria-selected={isBrowse}
+            aria-controls="panel-browse"
+            onClick={() => setView('browse')}
+            type="button"
+          >
+            Browse logs
+          </button>
+        </div>
+      </div>
+
+      {/* Panel: Add */}
+      <section
+        id="panel-add"
+        role="tabpanel"
+        aria-labelledby="tab-add"
+        hidden={!isAdd}
+        className="card"
+      >
         <h2 className="sectionTitle">Log a Study Session</h2>
-        <StudyLogForm onCreated={() => dispatch(setFilter({}))} />
+        <StudyLogForm
+          onCreated={() => {
+            // clear filters and jump to browse
+            dispatch(setFilter({}));
+            setView('browse');
+          }}
+        />
       </section>
 
-      <section className="card">
+      {/* Panel: Browse */}
+      <section
+        id="panel-browse"
+        role="tabpanel"
+        aria-labelledby="tab-browse"
+        hidden={!isBrowse}
+        className="card"
+      >
         <StudyLogFilters itemsSample={items} />
 
         {isFetching && (
@@ -47,7 +124,9 @@ export default function StudyLogPage() {
         )}
 
         {!isFetching && items.length === 0 ? (
-          <div className="empty">No entries match your filters. Try clearing filters or add a study session above.</div>
+          <div className="empty">
+            No entries match your filters. Try clearing filters or add a study session above.
+          </div>
         ) : (
           <>
             <StudyLogTable rows={items} onEditRow={(id)=>dispatch(setEditing(id))} />
