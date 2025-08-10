@@ -44,13 +44,15 @@ public class StudyLogController {
     }
 
     @PatchMapping("/{id}")
-    public StudyLogResp update(@PathVariable String id, @RequestBody StudyLogUpdateReq req) {
-        return service.update(id, req);
+    public StudyLogResp update(@PathVariable String id, @RequestBody StudyLogUpdateReq req, Authentication authentication) {
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("userId");
+        return service.update(id, req, userId);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable String id) {
-        service.delete(id);
+    public void delete(@PathVariable String id, Authentication authentication) {
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("userId");
+        service.delete(id, userId);
     }
 }

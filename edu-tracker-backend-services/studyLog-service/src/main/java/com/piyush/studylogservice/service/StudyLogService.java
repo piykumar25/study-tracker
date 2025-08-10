@@ -9,9 +9,9 @@ import jakarta.validation.Valid;
 public interface StudyLogService {
     PagedResp<StudyLogResp> list(String q, String subject, String from, String to, Integer minMins, String sort, int page, int size, Long userId);
 
-    StudyLogResp update(String id, StudyLogUpdateReq req);
+    StudyLogResp update(String id, StudyLogUpdateReq req, Long userId);
 
-    void delete(String id);
+    void delete(String id, Long userId);
 
     StudyLogResp create(@Valid StudyLogCreateReq req, Long userId);
 }
