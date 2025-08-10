@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,14 +29,18 @@ public class StudyLogController {
             @RequestParam(required = false) Integer minMins,
             @RequestParam(defaultValue = "dateDesc") String sort,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
     ) {
-        return service.list(q, subject, from, to, minMins, sort, page, size);
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("userId");
+        return service.list(q, subject, from, to, minMins, sort, page, size, userId);
     }
 
     @PostMapping
-    public ResponseEntity<StudyLogResp> create(@Valid @RequestBody StudyLogCreateReq req) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(req));
+    public ResponseEntity<StudyLogResp> create(@Valid @RequestBody StudyLogCreateReq req, Authentication authentication) {
+        //authentication.principal.claims['userId']
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("userId");
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(req, userId));
     }
 
     @PatchMapping("/{id}")

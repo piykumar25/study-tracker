@@ -34,4 +34,7 @@ public class StudyLog {
 
     @Column(length = 500)
     private String notes;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 }

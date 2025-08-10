@@ -26,9 +26,12 @@ public class StudyLogServiceImpl implements StudyLogService {
 
     @Override
     public PagedResp<StudyLogResp> list(String q, String subject, String from, String to,
-                                        Integer minMins, String sort, int page, int size) {
+                                        Integer minMins, String sort, int page, int size, Long userId) {
         Specification<StudyLog> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            if (userId != null) {
+                predicates.add(cb.equal(root.get("userId"), userId));
+            }
             if (q != null && !q.isBlank()) {
                 String like = "%" + q.toLowerCase() + "%";
                 predicates.add(cb.or(
@@ -66,12 +69,13 @@ public class StudyLogServiceImpl implements StudyLogService {
 
     @Transactional
     @Override
-    public StudyLogResp create(@Valid StudyLogCreateReq req) {
+    public StudyLogResp create(StudyLogCreateReq req, Long userId) {
         StudyLog entity = StudyLog.builder()
                 .subject(req.subject())
                 .durationMins(req.durationMins())
                 .date(req.date())
                 .notes(req.notes())
+                .userId(userId)
                 .build();
         StudyLog saved = repo.save(entity);
         StudyLogResp dto = toResp(saved);
