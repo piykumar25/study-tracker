@@ -3,7 +3,7 @@ import { useUpdateMutation, useRemoveMutation } from '../../../services/studyLog
 import { setFilter, setEditing } from '../studyLogsSlice';
 import { fmtMins } from '../utils/format';
 import '../../studyLogs/styles/studyLogs.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 function RowView({ row, onEdit, onDelete }) {
   return (
