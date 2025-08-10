@@ -24,9 +24,25 @@ public class StudyLogServiceImpl implements StudyLogService {
     private final StudyLogRepository repo;
     private final RealtimeBroadcaster broadcaster;
 
+    private final RedisService redisService;
+
     @Override
     public PagedResp<StudyLogResp> list(String q, String subject, String from, String to,
                                         Integer minMins, String sort, int page, int size, Long userId) {
+
+        String key = "q_" + q + "_subject_" + subject +
+                "_from_" + from + "_to_" + to + "_minMins_"
+                + minMins + "_sort_" + sort + "_page_" + page
+                + "_size_" + size + "_userId_" + userId;
+        try {
+             PagedResp<StudyLogResp> cached = (PagedResp<StudyLogResp>) (redisService.get(key, PagedResp.class));
+             if (cached != null) {
+                 return cached;
+             }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
         Specification<StudyLog> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (userId != null) {
@@ -64,7 +80,13 @@ public class StudyLogServiceImpl implements StudyLogService {
         PageRequest pr = PageRequest.of(Math.max(0, page - 1), Math.max(1, size), sortBy);
         Page<StudyLog> pageRes = repo.findAll(spec, pr);
         List<StudyLogResp> items = pageRes.getContent().stream().map(this::toResp).toList();
-        return new PagedResp<>(items, pageRes.getTotalElements());
+        PagedResp<StudyLogResp> resp = new PagedResp<>(items, pageRes.getTotalElements());
+        try {
+            redisService.set(key, resp, 2000L);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return resp;
     }
 
     @Transactional
